@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Alternatif;
+use App\Models\Method;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -10,10 +12,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('topics', function (Blueprint $table) {
+        Schema::create('rangkings', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('slug')->unique();
+            $table->foreignIdFor(Alternatif::class)->constrained()->cascadeOnDelete();
+            $table->double('score');
+            $table->foreignIdFor(Method::class)->constrained()->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -24,6 +27,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('topics');
+        Schema::dropIfExists('rangkings');
     }
 };

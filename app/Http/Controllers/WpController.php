@@ -15,11 +15,11 @@ class WpController extends Controller
         // Data alternatif dari tabel yang Anda berikan
         $alternatives = [
             'Indra' => ['C1' => 70, 'C2' => 50, 'C3' => 80, 'C4' => 60],
-            'Roni'  => ['C1' => 50, 'C2' => 60, 'C3' => 82, 'C4' => 70],
+            'Roni' => ['C1' => 50, 'C2' => 60, 'C3' => 82, 'C4' => 70],
             'Putri' => ['C1' => 85, 'C2' => 55, 'C3' => 80, 'C4' => 75],
-            'Dani'  => ['C1' => 82, 'C2' => 70, 'C3' => 65, 'C4' => 85],
+            'Dani' => ['C1' => 82, 'C2' => 70, 'C3' => 65, 'C4' => 85],
             'Ratna' => ['C1' => 75, 'C2' => 75, 'C3' => 85, 'C4' => 74],
-            'Mira'  => ['C1' => 62, 'C2' => 50, 'C3' => 75, 'C4' => 80]
+            'Mira' => ['C1' => 62, 'C2' => 50, 'C3' => 75, 'C4' => 80]
         ];
 
         // Bobot kriteria
@@ -57,7 +57,7 @@ class WpController extends Controller
 
         // $normalizeNestedWeights = WpHelper::normalizeNestedWeights($weights);
 
-        return response()->json($weights);
+        return response()->json($result);
     }
 
     public function calculateSAW()
@@ -74,7 +74,7 @@ class WpController extends Controller
         $alternatives = ["A1", "A2", "A3", "A4"];
 
         // Bobot kategori utama (C1, C2, C3, C4, C5)
-        $weights = [0.250, 0.090, 0.060, 0.300, 0.250, 0.050]; 
+        $weights = [0.250, 0.090, 0.060, 0.300, 0.250, 0.050];
 
         // Jenis kriteria (1 = benefit, 0 = cost)
         $types = [1, 0, 1, 1, 0, 1];
@@ -97,40 +97,53 @@ class WpController extends Controller
 
     public function calculateTopsis()
     {
-        $alternatives = [
-            'A1' => ['C1' => 3, 'C2' => 3, 'C3' => 3, 'C4' => 2],
-            'A2' => ['C1' => 4, 'C2' => 4, 'C3' => 3, 'C4' => 2],
-            'A3' => ['C1' => 4, 'C2' => 5, 'C3' => 3, 'C4' => 3],
-            'A4' => ['C1' => 3, 'C2' => 4, 'C3' => 4, 'C4' => 4],
-            'A5' => ['C1' => 4, 'C2' => 5, 'C3' => 4, 'C4' => 4.2],
-        ];
-        
-        $criteria = [
-            'C1' => ['weight' => 0.1, 'type' => 'benefit'],
-            'C2' => ['weight' => 0.2, 'type' => 'benefit'],
-            'C3' => ['weight' => 0.2, 'type' => 'benefit'],
-            'C4' => ['weight' => 0.5, 'type' => 'cost'],
-        ];
-        
-
+        // Data alternatif dengan sub-kategori
         $alternatif = [
-            ['C1' => 3, 'C2' => 3, 'C3' => 3, 'C4' => 2],
-            ['C1' => 4, 'C2' => 4, 'C3' => 3, 'C4' => 2],
-            ['C1' => 4, 'C2' => 5, 'C3' => 3, 'C4' => 3],
-            ['C1' => 3, 'C2' => 4, 'C3' => 4, 'C4' => 4],
-            ['C1' => 4, 'C2' => 5, 'C3' => 4, 'C4' => 4.2],
+            [3, 3, 3, 2],  // A4
+            [4, 4, 3, 2],  // A4
+            [4, 5, 3, 3],  // A4
+            [3, 4, 4, 4],  // A4
+            [4, 5, 4, 4.2],  // A4
         ];
 
-        $kriteria = ['C1' => 'Hari', 'C2' => 'Tempat', 'C3' => 'Hotel', 'C4' => 'Biaya'];
-        $bobot = ['C1' => 0.1, 'C2' => 0.2, 'C3' => 0.2, 'C4' => 0.5];
-        // $subCriteria = [
-        //     'C1' => [3 => 0.8, 4 => 1, 2 => 0.6],
-        //     'C2' => [7 => 0.9, 6 => 1, 8 => 0.7],
-        //     'C3' => [5 => 0.8, 8 => 1, 6 => 0.9],
-        // ];
-        
-        // $result = TopsisHelper::calculateTopsis($alternatives, $criteria, $subCriteria);
-        $result = TopsisHelper::topsis_calculation($alternatif, $kriteria, $bobot);
+        // Alternatif
+        $alternatives = ["A1", "A2", "A3", "A4", "E"];
+
+        // Bobot kategori utama (C1, C2, C3, C4, C5, C6)
+        $weights = [0.10, 0.20, 0.20, 0.50];
+
+        // Jenis kriteria (1 = benefit, 0 = cost)
+        $types = [1, 1, 1, 0];
+
+        // Jalankan perhitungan TOPSIS
+        $result = TopsisHelper::calculateTOPSIS($alternatif, $alternatives, $weights, $types);
+
+        return response()->json($result);
+    }
+    public function calculateWp()
+    {
+        // Data alternatif dengan sub-kategori
+        $alternatif = [
+            [70, 50, 80, 60],  // A4
+            [50, 60, 82, 70],  // A4
+            [85, 55, 80, 75],  // A4
+            [82, 70, 65, 85],  // A4
+            [75, 75, 85, 74],  // A4
+            [62, 50, 75, 80],  // A4
+        ];
+
+        // Alternatif
+        $alternatives = ["A1", "A2", "A3", "A4", "E", "F"];
+
+        // Bobot kategori utama (C1, C2, C3, C4, C5, C6)
+        $weights = [5, 3, 4, 2];
+
+        // Jenis kriteria (1 = benefit, 0 = cost)
+        $types = [1, 1, 1, 1];
+
+        // Jalankan perhitungan WP
+        // $result = TopsisHelper::calculateTOPSIS($alternatif, $alternatives, $weights, $types);
+        $result = WpHelper::calculateWP($alternatif, $alternatives, $weights, $types);
 
         return response()->json($result);
     }

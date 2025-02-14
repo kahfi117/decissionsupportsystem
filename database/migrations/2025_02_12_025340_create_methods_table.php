@@ -10,13 +10,18 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('topics', function (Blueprint $table) {
+        Schema::create('methods', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('slug')->unique();
             $table->timestamps();
-            $table->softDeletes();
         });
+
+        // Insert metode secara default
+        \DB::table('methods')->insert([
+            ['name' => 'wp'],
+            ['name' => 'saw'],
+            ['name' => 'topsis'],
+        ]);
     }
 
     /**
@@ -24,6 +29,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('topics');
+        Schema::dropIfExists('methods');
     }
 };

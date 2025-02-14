@@ -27,11 +27,20 @@ class CategoryResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\Select::make('topic_id')
+                    ->label('Topik')
                     ->relationship('topic', 'name')
                     ->required()
+                    ->native(false)
+                    ->preload()
                     ->searchable(),
                 Forms\Components\Select::make('parent_id')
-                    ->options(fn($record): array => Category::where('id', '!=', $record)->pluck('name', 'id')->toArray()),
+                    ->label('Kategori Induk')
+                    ->native(false)
+                    ->preload()
+                    ->options(fn($record, $get): array =>
+                        Category::where('id', '!=', $record)
+                            ->where('topic_id', '=', $get('topic_id'))
+                            ->pluck('name', 'id')->toArray()),
             ]);
     }
 
@@ -72,8 +81,8 @@ class CategoryResource extends Resource
     {
         return [
             'index' => Pages\ListCategories::route('/'),
-            'create' => Pages\CreateCategory::route('/create'),
-            'edit' => Pages\EditCategory::route('/{record}/edit'),
+            // 'create' => Pages\CreateCategory::route('/create'),
+            // 'edit' => Pages\EditCategory::route('/{record}/edit'),
         ];
     }
 
