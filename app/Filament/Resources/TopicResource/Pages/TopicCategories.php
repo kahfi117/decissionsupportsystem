@@ -14,6 +14,11 @@ class TopicCategories extends ViewRecord
 {
     protected static string $resource = TopicResource::class;
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $breadcrumb = 'Kategori';
+    public function getTitle(): string
+    {
+        return "Kategori {$this->record->name}"; // Retrieve the title dynamically
+    }
 
     public function getRelationManagers(): array
     {

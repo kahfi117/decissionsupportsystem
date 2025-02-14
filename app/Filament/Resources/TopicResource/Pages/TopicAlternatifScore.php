@@ -16,9 +16,15 @@ class TopicAlternatifScore extends Page
     protected static string $resource = TopicResource::class;
     protected static string $view = 'filament.resources.topic-resource.pages.detail-topic';
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static ?string $breadcrumb = 'Alternatif Score';
     public function mount(int|string $record): void
     {
         $this->record = $this->resolveRecord($record);
+    }
+
+    public function getTitle(): string
+    {
+        return "Skor {$this->record->name}"; // Retrieve the title dynamically
     }
 
 }
