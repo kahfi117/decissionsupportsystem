@@ -31,8 +31,30 @@ class TopicView extends ViewRecord
                         ->label('Nama'),
                     Infolists\Components\TextEntry::make('slug')
                         ->label('Slug'),
+                    Infolists\Components\TextEntry::make('methods.id')
+                        ->label('Metode DSS')
+                        ->formatStateUsing(fn($state) => [
+                            1 => 'Weighted Product (WP)',
+                            2 => 'Simple Additive Weighting (SAW)',
+                            3 => 'TOPSIS'
+                        ][$state])
+                        ->badge(),
+                    Infolists\Components\TextEntry::make('description')
+                        ->limit(100)
+                        ->default('-')
+                        ->tooltip(function (Infolists\Components\TextEntry $component): ?string {
+                            $state = $component->getState();
+
+                            if (strlen($state) <= $component->getCharacterLimit()) {
+                                return null;
+                            }
+
+                            // Only render the tooltip if the entry contents exceeds the length limit.
+                            return $state;
+                        }),
                     DssGuide::make('dss')
                         ->label('DSS')
+                        ->hiddenLabel()
                         ->columnSpanFull()
                 ])->columns(2)
             ]);

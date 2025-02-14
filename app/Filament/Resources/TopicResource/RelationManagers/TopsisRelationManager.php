@@ -2,15 +2,16 @@
 
 namespace App\Filament\Resources\TopicResource\RelationManagers;
 
-use App\Http\Controllers\DssController;
-use App\Models\Rangking;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use App\Models\Rangking;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Http\Controllers\DssController;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Resources\RelationManagers\RelationManager;
 
 class TopsisRelationManager extends RelationManager
 {
@@ -22,7 +23,12 @@ class TopsisRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->query(Rangking::where('method_id', '=', 3))
+            ->query(
+                Rangking::whereHas('alternatif', function (Builder $query) {
+                    $query->where('topic_id', $this->ownerRecord->id)
+                        ->where('method_id', 3);
+                })
+            )
             ->recordTitleAttribute('score')
             ->columns([
                 Tables\Columns\TextColumn::make('alternatif.name')
@@ -34,7 +40,7 @@ class TopsisRelationManager extends RelationManager
                     ->badge()
                     ->sortable()
                     ->color('success')
-                    ->label('Skor'),
+                    ->label('Rank'),
 
             ])
             ->filters([
@@ -42,8 +48,26 @@ class TopsisRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\Action::make('Hitung Topsis')
-                    ->label('Lakukan DSS Topsis')
-                    ->action(fn() => app(DssController::class)->topsisCalculation($this->ownerRecord->id))
+                    ->label('DSS Topsis')
+                    ->action(function () {
+                        try {
+                            app(DssController::class)->topsisCalculation($this->ownerRecord->id);
+
+                        } catch (\DivisionByZeroError $divisionByZeroError) {
+                            Notification::make()
+                                ->title('Gagal melakukan perhitungan SAW')
+                                ->body('Cak Kembali Di pemberian Score. lengkapi data anda') // Menampilkan pesan error
+                                ->danger()
+                                ->send();
+
+                        } catch (\Throwable $e) {
+                            Notification::make()
+                                ->title('Gagal melakukan perhitungan SAW')
+                                ->body($e->getMessage()) // Menampilkan pesan error
+                                ->danger()
+                                ->send();
+                        }
+                    })
                     ->icon('heroicon-o-calculator')
                     ->color('success')
                     ->requiresConfirmation()

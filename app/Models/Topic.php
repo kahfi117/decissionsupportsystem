@@ -12,7 +12,7 @@ class Topic extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'slug'];
+    protected $fillable = ['name', 'slug', 'description'];
 
     /**
      * Get all of the categories for the Topic

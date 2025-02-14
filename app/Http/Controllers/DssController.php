@@ -32,6 +32,7 @@ class DssController extends Controller
             ->toArray();
 
         // Buat matriks alternatif
+
         $alternatifMatrix = [];
         foreach ($alternatifs as $alternatif) {
             $row = [];
@@ -42,6 +43,7 @@ class DssController extends Controller
             }
             $alternatifMatrix[] = $row;
         }
+
 
         $weights = $this->getWeights($topicId);
 
@@ -59,42 +61,7 @@ class DssController extends Controller
 
         $methodId = Method::where('name', 'saw')->first()->id; // Pastikan Anda menggunakan metode yang sesuai
 
-        DB::transaction(function () use ($ranking, $alternatifs, $methodId) {
-            foreach ($ranking as $index => $score) {
-                $alternatif = $alternatifs[$index]; // Ambil alternatif berdasarkan urutan
-
-                if (!$alternatif->trashed()) {
-                    $rankingData[] = [
-                        'alternatif_id' => $alternatif->id,
-                        'method_id' => $methodId,
-                        'score' => $score
-                    ];
-                }
-            }
-
-            // Simpan/update ranking
-            foreach ($rankingData as $data) {
-                Rangking::updateOrCreate(
-                    [
-                        'alternatif_id' => $data['alternatif_id'],
-                        'method_id' => $methodId
-                    ],
-                    [
-                        'score' => $data['score']
-                    ]
-                );
-            }
-
-            // Perbarui ranking berdasarkan skor (descending)
-            $rankings = Rangking::where('method_id', $methodId)
-                ->orderByDesc('score')
-                ->get();
-
-            foreach ($rankings as $index => $rank) {
-                $rank->update(['rank' => $index + 1]);
-            }
-
-        });
+        $this->transactionDbRank($ranking, $alternatifs, $methodId);
 
         Notification::make()
             ->title('Generated successfully')
@@ -103,7 +70,7 @@ class DssController extends Controller
             ->send();
     }
 
-    public function topsisCalculation($topicId)
+    public function topsisCalculation($topicId): void
     {
 
         $alternatifs = Alternatif::with('scores')
@@ -146,47 +113,16 @@ class DssController extends Controller
 
         $methodId = Method::where('name', 'topsis')->first()->id;
 
-        DB::transaction(function () use ($ranking, $alternatifs, $methodId) {
-            foreach ($ranking as $index => $score) {
-                $alternatif = $alternatifs[$index]; // Ambil alternatif berdasarkan urutan
-
-                if (!$alternatif->trashed()) {
-                    $rankingData[] = [
-                        'alternatif_id' => $alternatif->id,
-                        'method_id' => $methodId,
-                        'score' => $score
-                    ];
-                }
-            }
-
-            // Simpan/update ranking
-            foreach ($rankingData as $data) {
-                Rangking::updateOrCreate(
-                    [
-                        'alternatif_id' => $data['alternatif_id'],
-                        'method_id' => $methodId
-                    ],
-                    [
-                        'score' => $data['score']
-                    ]
-                );
-            }
-
-            // Perbarui ranking berdasarkan skor (descending)
-            $rankings = Rangking::where('method_id', $methodId)
-                ->orderByDesc('score')
-                ->get();
-
-            foreach ($rankings as $index => $rank) {
-                $rank->update(['rank' => $index + 1]);
-            }
-
-        });
+        $this->transactionDbRank($ranking, $alternatifs, $methodId);
 
 
-        return response()->json($ranking);
+        Notification::make()
+            ->title('Generated successfully')
+            ->icon('heroicon-o-document-text')
+            ->iconColor('success')
+            ->send();
     }
-    public function wpCalculation($topicId)
+    public function wpCalculation($topicId): void
     {
 
         $alternatifs = Alternatif::with('scores')
@@ -229,6 +165,36 @@ class DssController extends Controller
 
         $methodId = Method::where('name', 'wp')->first()->id;
 
+        $this->transactionDbRank($ranking, $alternatifs, $methodId);
+
+        Notification::make()
+            ->title('Generated successfully')
+            ->icon('heroicon-o-document-text')
+            ->iconColor('success')
+            ->send();
+    }
+
+    private function getWeights($topicId): array
+    {
+        $weights = Category::where('topic_id', '=', $topicId)
+            ->where('is_active', true)
+            ->pluck('weight', 'id')
+            ->toArray();
+
+        return array_values($weights);
+    }
+
+    private function getCategoryTypes($topicId): array
+    {
+        $type = Category::where('topic_id', '=', $topicId)
+            ->where('is_active', true)
+            ->pluck('cat', 'id')->toArray();
+
+        return array_values($type);
+    }
+
+    private function transactionDbRank($ranking, $alternatifs, $methodId): void
+    {
         DB::transaction(function () use ($ranking, $alternatifs, $methodId) {
             foreach ($ranking as $index => $score) {
                 $alternatif = $alternatifs[$index]; // Ambil alternatif berdasarkan urutan
@@ -265,27 +231,5 @@ class DssController extends Controller
             }
 
         });
-
-
-        return response()->json($ranking);
-    }
-
-    private function getWeights($topicId): array
-    {
-        $weights = Category::where('topic_id', '=', $topicId)
-            ->where('is_active', true)
-            ->pluck('weight', 'id')
-            ->toArray();
-
-        return array_values($weights);
-    }
-
-    private function getCategoryTypes($topicId): array
-    {
-        $type = Category::where('topic_id', '=', $topicId)
-            ->where('is_active', true)
-            ->pluck('cat', 'id')->toArray();
-
-        return array_values($type);
     }
 }

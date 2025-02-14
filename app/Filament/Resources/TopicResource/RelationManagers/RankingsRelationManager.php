@@ -2,16 +2,18 @@
 
 namespace App\Filament\Resources\TopicResource\RelationManagers;
 
-use App\Http\Controllers\DssController;
-use App\Models\Rangking;
+use Throwable;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use App\Models\Rangking;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
+use App\Http\Controllers\DssController;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\HtmlString;
+use Filament\Resources\RelationManagers\RelationManager;
 
 class RankingsRelationManager extends RelationManager
 {
@@ -24,6 +26,12 @@ class RankingsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->query(
+                Rangking::whereHas('alternatif', function (Builder $query) {
+                    $query->where('topic_id', $this->ownerRecord->id)
+                        ->where('method_id', 2);
+                })
+            )
             ->recordTitleAttribute('score')
             ->columns([
                 Tables\Columns\TextColumn::make('alternatif.name')
@@ -35,7 +43,7 @@ class RankingsRelationManager extends RelationManager
                     ->badge()
                     ->sortable()
                     ->color('success')
-                    ->label('Skor'),
+                    ->label('Rank'),
 
             ])
             ->filters([
@@ -43,8 +51,26 @@ class RankingsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\Action::make('Hitung SAW')
-                    ->label('Lakukan DSS SAW')
-                    ->action(fn() => app(DssController::class)->sawCalculation($this->ownerRecord->id))
+                    ->label('DSS SAW')
+                    ->action(function () {
+                        try {
+                            app(DssController::class)->sawCalculation($this->ownerRecord->id);
+
+                        } catch (\DivisionByZeroError $divisionByZeroError) {
+                            Notification::make()
+                                ->title('Gagal melakukan perhitungan SAW')
+                                ->body('Cak Kembali Di pemberian Score. lengkapi data anda') // Menampilkan pesan error
+                                ->danger()
+                                ->send();
+
+                        } catch (Throwable $e) {
+                            Notification::make()
+                                ->title('Gagal melakukan perhitungan SAW')
+                                ->body($e->getMessage()) // Menampilkan pesan error
+                                ->danger()
+                                ->send();
+                        }
+                    })
                     ->icon('heroicon-o-calculator')
                     ->color('success')
                     ->requiresConfirmation()

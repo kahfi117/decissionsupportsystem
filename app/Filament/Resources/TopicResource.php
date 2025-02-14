@@ -23,7 +23,7 @@ class TopicResource extends Resource
     protected static ?string $model = Topic::class;
     protected static ?string $recordTitleAttribute = 'name';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    protected static ?string $label = 'Topic';
     public static function form(Form $form): Form
     {
         return $form
@@ -44,6 +44,10 @@ class TopicResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true)
+                    ->hiddenOn('view'),
+                Forms\Components\Textarea::make('description')
+                    ->label('Deskripsi Topik')
+                    ->columnSpanFull()
                     ->hiddenOn('view'),
                 Forms\Components\CheckboxList::make('methods')
                     ->relationship('methods')

@@ -40,9 +40,6 @@ class WpController extends Controller
 
         // Jalankan metode WP untuk nested criteria
         // $ranking = WpHelper::wpProcess($alternatives, $weights, $criteriaTypes);
-        $ranking = WpHelper::calculatePreferences($alternatives, $weights, $criteriaTypes);
-        $weights = WpHelper::normalizeWeights($weights);
-
         $criteriaKeys = array_keys($weights);
         $result = [];
 

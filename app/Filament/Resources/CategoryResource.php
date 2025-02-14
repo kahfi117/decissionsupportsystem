@@ -51,9 +51,11 @@ class CategoryResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('topic.name')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('parent_id')
-                    ->numeric(),
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('parent.name')
+                    ->badge()
+                    ->searchable(),
             ])
             ->filters([
                 Tables\Filters\TrashedFilter::make(),

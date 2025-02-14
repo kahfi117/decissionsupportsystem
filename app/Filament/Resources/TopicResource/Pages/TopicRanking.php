@@ -9,6 +9,7 @@ use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
 use App\Filament\Resources\TopicResource;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\TopicResource\RelationManagers\WpRelationManager;
 use App\Filament\Resources\TopicResource\RelationManagers\TopsisRelationManager;
 use App\Filament\Resources\TopicResource\RelationManagers\RankingsRelationManager;
 use App\Filament\Resources\TopicResource\RelationManagers\CategoriesRelationManager;
@@ -17,6 +18,13 @@ class TopicRanking extends ViewRecord
 {
     protected static string $resource = TopicResource::class;
     protected static ?string $navigationIcon = 'heroicon-o-numbered-list';
+
+    protected static ?string $breadcrumb = 'Ranking';
+
+    public function getTitle(): string
+    {
+        return "Ranking {$this->record->name}"; // Retrieve the title dynamically
+    }
 
     public function getRelationManagers(): array
     {
@@ -35,7 +43,7 @@ class TopicRanking extends ViewRecord
 
         // Cek apakah ada id 1 (WP)
         if (in_array(1, $methodIds)) {
-            $relationManagers[] = RankingsRelationManager::class;
+            $relationManagers[] = WpRelationManager::class;
         }
         // Cek apakah ada id 1 (WP)
         if (in_array(2, $methodIds)) {
