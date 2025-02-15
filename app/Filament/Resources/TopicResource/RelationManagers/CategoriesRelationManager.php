@@ -48,7 +48,7 @@ class CategoriesRelationManager extends RelationManager
                     })
                     ->formatStateUsing(fn(string $state): ?string => $state != '' ? $state : 'Induk'),
                 Tables\Columns\TextInputColumn::make('name')
-                    ->rules(['required', 'numeric', 'max:255']),
+                    ->rules(['required', 'max:255']),
                 Tables\Columns\TextInputColumn::make('weight')
                     ->label('Bobot')
                     ->rules(['required', 'numeric']),

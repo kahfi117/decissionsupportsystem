@@ -27,7 +27,7 @@ class PanelPanelProvider extends PanelProvider
             ->default()
             ->id('panel')
             ->path('admin')
-            ->login()
+            // ->login()
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -40,7 +40,6 @@ class PanelPanelProvider extends PanelProvider
             ->font('Poppins')
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
@@ -55,7 +54,7 @@ class PanelPanelProvider extends PanelProvider
                 DispatchServingFilamentEvent::class,
             ])
             ->authMiddleware([
-                Authenticate::class,
+                // Authenticate::class,
             ])
             ->maxContentWidth(MaxWidth::Full)
             ->unsavedChangesAlerts()
