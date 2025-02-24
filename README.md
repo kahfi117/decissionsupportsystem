@@ -1,5 +1,30 @@
 # 🚀 Panduan Instalasi Aplikasi dari GitHub
 
+## 📌 Persyaratan Instalasi
+### 🖥 Windows
+- PHP 8.3 atau lebih tinggi ([Unduh PHP](https://windows.php.net/download/))
+- Composer ([Unduh Composer](https://getcomposer.org/))
+- Node.js & NPM ([Unduh Node.js](https://nodejs.org/))
+- MySQL atau PostgreSQL
+- Git ([Unduh Git](https://git-scm.com/downloads))
+
+### 🍏 macOS
+- Homebrew ([Instalasi Homebrew](https://brew.sh/))
+- PHP 8.3 atau lebih tinggi (`brew install php`)
+- Composer (`brew install composer`)
+- Node.js & NPM (`brew install node`)
+- MySQL atau PostgreSQL
+- Git (`brew install git`)
+
+### 🐧 Linux (Ubuntu/Debian)
+- PHP 8.3 atau lebih tinggi (`sudo apt install php8.3 php8.3-mbstring php8.3-xml php8.3-curl php8.3-zip unzip -y`)
+- Composer (`curl -sS https://getcomposer.org/installer | php && sudo mv composer.phar /usr/local/bin/composer`)
+- Node.js & NPM (`sudo apt install nodejs npm -y`)
+- MySQL atau PostgreSQL (`sudo apt install mysql-server` atau `sudo apt install postgresql`)
+- Git (`sudo apt install git -y`)
+
+---
+
 ## 📌 Bagian 1: Menjalankan Aplikasi dari GitHub (Tanpa Docker)
 
 ### 1️⃣ Clone Repository dari GitHub
