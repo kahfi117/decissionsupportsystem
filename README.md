@@ -1,17 +1,17 @@
-# 🚀 Panduan Instalasi Laravel dari GitHub
+# 🚀 Panduan Instalasi Aplikasi dari GitHub
 
-## 📌 Bagian 1: Menjalankan Laravel dari GitHub (Tanpa Docker)
+## 📌 Bagian 1: Menjalankan Aplikasi dari GitHub (Tanpa Docker)
 
 ### 1️⃣ Clone Repository dari GitHub
 ```sh
-git clone https://github.com/username/repository.git myproject
-cd myproject
+git clone https://github.com/kahfi117/decissionsupportsystem.git dss
+cd dss
 ```
 *(Ganti `username/repository` dengan repositori GitHub Anda.)*
 
 ---
 
-### 2️⃣ Instal Dependensi Laravel
+### 2️⃣ Instal Dependensi Aplikasi
 ```sh
 composer install
 ```
@@ -54,40 +54,44 @@ Jika ada error saat migrasi, periksa konfigurasi database di `.env`.
 
 ---
 
-### 5️⃣ Jalankan Laravel
+### 5️⃣ Jalankan Aplikasi
 ```sh
 php artisan serve
 ```
-Akses Laravel di: **[http://127.0.0.1:8000](http://127.0.0.1:8000)** 🚀
+Akses Aplikasi di: **[http://127.0.0.1:8000](http://127.0.0.1:8000)** 🚀
 
 ---
 
-## 📌 Bagian 2: Menjalankan Laravel dari GitHub (Dengan Docker Sail)
+## 📌 Bagian 2: Menjalankan Aplikasi dari GitHub (Dengan Docker Sail)
 > **Syarat**: Docker & Docker Compose harus sudah terinstal
 
 ### 1️⃣ Clone Repository
 ```sh
-git clone https://github.com/username/repository.git myproject
-cd myproject
+git clone https://github.com/kahfi117/decissionsupportsystem.git dss
+cd dss
 ```
 
 ---
 
-### 2️⃣ Jalankan Laravel Sail
-1. **Aktifkan Laravel Sail (Jika belum ada)**
+### 2️⃣ Jalankan Aplikasi Sail
+1. **Aktifkan Aplikasi Sail (Jika belum ada)**
    ```sh
    composer install
    php artisan sail:install
    ```
    Pilih database yang akan digunakan (contoh: MySQL).
 
-2. **Jalankan Laravel dengan Docker Sail**
+2. **Jalankan Aplikasi dengan Docker Sail**
+   Buar Alias Sail
    ```sh
-   ./vendor/bin/sail up -d
+   alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
+   ```
+   ```sh
+   sail up -d
    ```
    *(Gunakan `sail up -d` untuk menjalankan di latar belakang.)*
 
-3. **Akses Laravel**
+4. **Akses Aplikasi**
    ```sh
    http://localhost
    ```
@@ -96,7 +100,7 @@ cd myproject
 
 ### 3️⃣ Jalankan Migrasi Database
 ```sh
-./vendor/bin/sail artisan migrate
+sail artisan migrate
 ```
 
 ---
