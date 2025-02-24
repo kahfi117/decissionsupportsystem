@@ -82,6 +82,7 @@ cd dss
    Pilih database yang akan digunakan (contoh: MySQL).
 
 2. **Jalankan Aplikasi dengan Docker Sail**
+
    Buar Alias Sail
    ```sh
    alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
