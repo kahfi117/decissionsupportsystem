@@ -23,7 +23,7 @@ class TopicResource extends Resource
     protected static ?string $model = Topic::class;
     protected static ?string $recordTitleAttribute = 'name';
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $label = 'Topic';
+    protected static ?string $label = 'Topik';
     public static function form(Form $form): Form
     {
         return $form
@@ -34,7 +34,6 @@ class TopicResource extends Resource
                         if (($get('slug') ?? '') !== Str::slug($old)) {
                             return;
                         }
-
                         $set('slug', Str::slug($state));
                     })
                     ->required()

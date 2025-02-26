@@ -17,6 +17,8 @@ class TopicAlternatifScore extends Page
     protected static string $view = 'filament.resources.topic-resource.pages.detail-topic';
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
     protected static ?string $breadcrumb = 'Alternatif Score';
+
+    protected static ?string $title = 'Alternatif Score';
     public function mount(int|string $record): void
     {
         $this->record = $this->resolveRecord($record);

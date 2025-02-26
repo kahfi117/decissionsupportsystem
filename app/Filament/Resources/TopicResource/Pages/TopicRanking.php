@@ -20,6 +20,7 @@ class TopicRanking extends ViewRecord
     protected static ?string $navigationIcon = 'heroicon-o-numbered-list';
 
     protected static ?string $breadcrumb = 'Ranking';
+    protected static ?string $title = 'Ranking';
 
     public function getTitle(): string
     {

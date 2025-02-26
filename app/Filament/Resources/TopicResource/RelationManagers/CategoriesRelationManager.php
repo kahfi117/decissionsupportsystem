@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\TopicResource\RelationManagers;
 
+use App\Rules\WeightsKriteria;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Category;
@@ -51,22 +52,23 @@ class CategoriesRelationManager extends RelationManager
                     ->rules(['required', 'max:255']),
                 Tables\Columns\TextInputColumn::make('weight')
                     ->label('Bobot')
-                    ->rules(['required', 'numeric']),
-                IconSelectColumn::make('cat')
+                    ->rules(fn($record): array => [
+                        'required',
+                        'numeric',
+                        new WeightsKriteria(
+                            $record->parent_id ?? null,
+                            $record->id ?? null,
+                            $this->ownerRecord->id ?? null,
+
+                        )
+                    ]),
+                Tables\Columns\SelectColumn::make('cat')
                     ->label('Kategori')
                     ->options([
                         true => 'Benefit',
                         false => 'Cost',
                     ])
-                    ->icons([
-                        true => 'heroicon-o-check-circle',
-                        false => 'heroicon-o-x-circle',
-                    ])
-                    ->colors([
-                        true => 'success',
-                        false => 'danger'
-                    ])
-                    ->closeOnSelection(),
+                    ->selectablePlaceholder(false),
                 IconSelectColumn::make('is_active')
                     ->label('Aktif/NonAktif')
                     ->options([
@@ -92,13 +94,13 @@ class CategoriesRelationManager extends RelationManager
                                     ->body('Produk ini memiliki Induk yang dinonaktifkan. Harap aktifkan Induk terlebih dahulu.')
                                     ->danger()
                                     ->send();
-                                Category::where('id', $record->id)->update(['is_active' => false]);
+                                Category::where('id', $record->id)->update(['is_active' => false, 'weight' => 0]);
                             }
                         }
 
                         // Jika parent dinonaktifkan, semua child juga harus nonaktif
                         if (!$state) {
-                            Category::where('parent_id', $record->id)->update(['is_active' => false]);
+                            Category::where('parent_id', $record->id)->update(['is_active' => false, 'weight' => 0]);
 
                             if ($record->parent_id) {
                                 Notification::make()
@@ -113,7 +115,7 @@ class CategoriesRelationManager extends RelationManager
                         if ($state && $record->parent_id) {
                             $parent = Category::find($record->parent_id);
                             if ($parent && !$parent->is_active) {
-                                Category::where('id', $record->id)->update(['is_active' => false]);
+                                Category::where('id', $record->id)->update(['is_active' => false, 'weight' => 0.0]);
                             }
                         }
                     }),
@@ -121,6 +123,7 @@ class CategoriesRelationManager extends RelationManager
             ->filters([
                 //
             ])
+            ->defaultSort('_lft', 'asc')
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
             ])
