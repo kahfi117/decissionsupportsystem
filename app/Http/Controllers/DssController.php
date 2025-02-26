@@ -15,6 +15,7 @@ use App\Helpers\TopsisHelper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Builder;
 
 class DssController extends Controller
 {
@@ -61,7 +62,7 @@ class DssController extends Controller
 
         $methodId = Method::where('name', 'saw')->first()->id; // Pastikan Anda menggunakan metode yang sesuai
 
-        $this->transactionDbRank($ranking, $alternatifs, $methodId);
+        $this->transactionDbRank($ranking, $alternatifs, $methodId, $topicId);
 
         Notification::make()
             ->title('Generated successfully')
@@ -113,7 +114,7 @@ class DssController extends Controller
 
         $methodId = Method::where('name', 'topsis')->first()->id;
 
-        $this->transactionDbRank($ranking, $alternatifs, $methodId);
+        $this->transactionDbRank($ranking, $alternatifs, $methodId, $topicId);
 
 
         Notification::make()
@@ -165,7 +166,7 @@ class DssController extends Controller
 
         $methodId = Method::where('name', 'wp')->first()->id;
 
-        $this->transactionDbRank($ranking, $alternatifs, $methodId);
+        $this->transactionDbRank($ranking, $alternatifs, $methodId, $topicId);
 
         Notification::make()
             ->title('Generated successfully')
@@ -193,9 +194,9 @@ class DssController extends Controller
         return array_values($type);
     }
 
-    private function transactionDbRank($ranking, $alternatifs, $methodId): void
+    private function transactionDbRank($ranking, $alternatifs, $methodId, $topicId): void
     {
-        DB::transaction(function () use ($ranking, $alternatifs, $methodId) {
+        DB::transaction(function () use ($ranking, $alternatifs, $methodId, $topicId) {
             foreach ($ranking as $index => $score) {
                 $alternatif = $alternatifs[$index]; // Ambil alternatif berdasarkan urutan
 
@@ -222,7 +223,9 @@ class DssController extends Controller
             }
 
             // Perbarui ranking berdasarkan skor (descending)
-            $rankings = Rangking::where('method_id', $methodId)
+            $rankings = Rangking::whereHas('alternatif', function (Builder $query) use ($topicId) {
+                $query->where('topic_id', $topicId);
+            })->where('method_id', $methodId)
                 ->orderByDesc('score')
                 ->get();
 

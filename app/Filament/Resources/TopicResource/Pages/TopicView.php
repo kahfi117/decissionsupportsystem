@@ -14,6 +14,8 @@ class TopicView extends ViewRecord
 {
     protected static string $resource = TopicResource::class;
 
+    protected static ?string $title = 'Detail';
+
     public function mount(int|string $record): void
     {
         $this->record = $this->resolveRecord($record);

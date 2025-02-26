@@ -34,6 +34,7 @@ class WpRelationManager extends RelationManager
                     ->label('Nama Alternatif')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('score')
+                    ->formatStateUsing(fn(float $state): float => round($state, 3))
                     ->label('Skor'),
                 Tables\Columns\TextColumn::make('rank')
                     ->badge()

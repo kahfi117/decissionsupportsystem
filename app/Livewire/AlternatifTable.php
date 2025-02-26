@@ -54,10 +54,11 @@ class AlternatifTable extends Component
             $catId = $matches[2];
             $value = $this->scores[$altId][$catId];
 
+            $value = ($value === '' || $value === null) ? null : (float) $value;
             // Simpan data secara otomatis ke database
             AlternatifScore::updateOrCreate(
                 ['alternatif_id' => $altId, 'category_id' => $catId],
-                ['value' => $value]
+                ['value' => $value ?? 0]
             );
         }
     }

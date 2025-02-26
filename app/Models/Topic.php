@@ -58,4 +58,17 @@ class Topic extends Model
     {
         return $this->name;
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($alternatif) {
+            $alternatif->categories()->delete(); // Soft delete semua ranking terkait
+        });
+
+        static::restoring(function ($alternatif) {
+            $alternatif->categories()->restore(); // Restore jika alternatif dikembalikan
+        });
+    }
 }

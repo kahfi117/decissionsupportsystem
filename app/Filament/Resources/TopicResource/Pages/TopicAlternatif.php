@@ -12,6 +12,7 @@ class TopicAlternatif extends ViewRecord
     protected static string $resource = TopicResource::class;
     protected static ?string $navigationIcon = 'heroicon-o-folder-open';
     protected static ?string $breadcrumb = 'Alternatif';
+    protected static ?string $title = 'Alternatif';
 
     public function getTitle(): string
     {
