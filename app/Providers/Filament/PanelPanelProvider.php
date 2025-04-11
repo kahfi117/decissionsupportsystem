@@ -21,6 +21,12 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 
+use App\Filament\Resources\AlternatifResource;
+use App\Filament\Resources\CategoryResource;
+use Filament\Navigation\NavigationBuilder;
+use Filament\Navigation\NavigationItem;
+use Filament\Pages\Dashboard;
+
 class PanelPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -29,7 +35,7 @@ class PanelPanelProvider extends PanelProvider
             ->default()
             ->id('panel')
             ->path('admin')
-            // ->login()
+            ->login()
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -62,12 +68,27 @@ class PanelPanelProvider extends PanelProvider
 
             ])
             ->authMiddleware([
-                // Authenticate::class,
+                Authenticate::class,
             ])
             ->maxContentWidth(MaxWidth::Full)
             ->unsavedChangesAlerts()
             ->spa()
             ->topNavigation()
+            ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
+                return $builder->items([
+                    NavigationItem::make('Dashboard')
+                        ->icon('heroicon-o-home')
+                        ->isActiveWhen(fn (): bool => request()->routeIs('filament.admin.pages.dashboard'))
+                        ->url(fn (): string => Dashboard::getUrl()),
+                    // ...CategoryResource::getNavigationItems(),
+                    // ...AlternatifResource::getNavigationItems(),
+                    NavigationItem::make('DSS System')
+                        ->icon('heroicon-o-squares-2x2')
+                        ->isActiveWhen(fn ():bool => request()->is('admin/topics*'))
+                        ->url(fn(): string => 'admin/topics/dss/1')
+                ]);
+            })
+            ->breadcrumbs(false)
             ->sidebarCollapsibleOnDesktop();
     }
 }

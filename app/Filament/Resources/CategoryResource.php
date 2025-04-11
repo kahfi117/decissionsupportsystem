@@ -17,9 +17,9 @@ class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-swatch';
 
-    protected static ?string $label = 'Kategori';
+    protected static ?string $label = 'Kriteria';
 
     public static function form(Form $form): Form
     {
@@ -36,7 +36,7 @@ class CategoryResource extends Resource
                     ->preload()
                     ->searchable(),
                 Forms\Components\Select::make('parent_id')
-                    ->label('Kategori Induk')
+                    ->label('Kriteria Induk')
                     ->native(false)
                     ->preload()
                     ->options(fn($record, $get): array =>
